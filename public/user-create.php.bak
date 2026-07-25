@@ -1,0 +1,83 @@
+<?php
+
+declare(strict_types=1);
+
+require_once dirname(__DIR__) . '/app/Helpers/bootstrap.php';
+require_once dirname(__DIR__) . '/app/Helpers/layout.php';
+
+use App\Services\PermissionService;
+
+PermissionService::require('users.manage');
+
+$pdo = db();
+
+$roles = $pdo->query("
+    SELECT id, name
+    FROM roles
+    ORDER BY name ASC
+")->fetchAll(PDO::FETCH_ASSOC);
+
+render_header('Nieuwe gebruiker');
+?>
+
+<div class="card">
+
+    <h2>Nieuwe gebruiker</h2>
+
+    <p>Vul hieronder de gegevens van de nieuwe gebruiker in.</p>
+
+    <form method="post" action="">
+
+        <div class="form-group">
+            <label for="name">Naam</label>
+            <input
+                type="text"
+                id="name"
+                name="name"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="email">E-mailadres</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="password">Tijdelijk wachtwoord</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                minlength="8"
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="role_id">Rol</label>
+            <select id="role_id" name="role_id" required>
+                <option value="">Kies een rol</option>
+            </select>
+        </div>
+
+        <p style="margin-top: 20px;">
+            <button class="button button-primary" type="submit">
+                Gebruiker aanmaken
+            </button>
+
+            <a class="button" href="/users.php">
+                Annuleren
+            </a>
+        </p>
+
+    </form>
+
+</div>
+
+<?php render_footer(); ?>

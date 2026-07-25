@@ -1,0 +1,38 @@
+ATT Sprint 1 installeren
+
+1. Upload de mapinhoud naar:
+/var/www/att-address-portal/
+
+2. Controleer:
+
+php -l /var/www/att-address-portal/app/Services/PermissionService.php
+php -l /var/www/att-address-portal/app/Middleware/Authorization.php
+php -l /var/www/att-address-portal/app/Helpers/permissions.php
+
+3. Test autoload:
+
+php -r '
+require "/var/www/att-address-portal/app/Helpers/bootstrap.php";
+var_dump(
+    class_exists("App\\Services\\PermissionService"),
+    class_exists("App\\Middleware\\Authorization")
+);
+'
+
+Verwacht:
+bool(true)
+bool(true)
+
+4. Gebruik op pagina's:
+
+use App\Middleware\Authorization;
+
+Authorization::require("brabo.addresses.view");
+
+of:
+
+require dirname(__DIR__) . "/app/Helpers/permissions.php";
+
+if (can_brabo()) {
+    // Toon Brabo-menu.
+}

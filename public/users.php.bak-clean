@@ -1,0 +1,134 @@
+<?php
+
+declare(strict_types=1);
+
+require_once dirname(__DIR__) . '/app/Helpers/bootstrap.php';
+require_once dirname(__DIR__) . '/app/Helpers/layout.php';
+
+use App\Services\PermissionService;
+
+PermissionService::require('users.manage');
+
+$pdo = db();
+
+$stmt = $pdo->query("
+    SELECT
+        u.id,
+        u.name,
+        u.email,
+        r.name AS role,
+        u.is_active,
+        u.is_online,
+        u.last_seen_at,
+        u.created_at
+    FROM users u
+    LEFT JOIN roles r
+        ON r.id = u.role_id
+    ORDER BY u.name ASC
+");
+
+$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+render_header('Chauffeurs en gebruikers');
+?>
+
+<h2>Chauffeurs en gebruikers</h2>
+
+<p>Overzicht van alle gebruikers van het ATT Portaal.</p>
+
+<p style="margin:20px 0;">
+    <a class="button button-primary" href="/user-create.php">
+        Nieuwe gebruiker
+    </a>
+</p>
+
+    <div class="card-body">
+
+        <?php if (!$users): ?>
+
+            <p>Er zijn nog geen gebruikers gevonden.</p>
+
+        <?php else: ?>
+
+            <div class="table-responsive">
+
+                <table class="table">
+
+                    <thead>
+                        <tr>
+<th>Naam</th>
+<th>E-mailadres</th>
+<th>Rol</th>
+<th>Status</th>
+<th>Online</th>
+<th>Laatst gezien</th>
+<th>Aangemaakt</th>
+<th>Acties</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                    <?php foreach ($users as $item): ?>
+
+                        <tr>
+                            <td>
+                                <?= e((string) ($item['name'] ?? '')) ?>
+                            </td>
+
+                            <td>
+                                <?= e((string) ($item['email'] ?? '')) ?>
+                            </td>
+
+                            <td>
+                                <?= e(ucfirst((string) ($item['role'] ?? ''))) ?>
+                            </td>
+
+                            <td>
+                                <?php if ((int) ($item['is_active'] ?? 0) === 1): ?>
+                                    <span class="badge badge-success">
+                                        Actief
+                                    </span>
+                                <?php else: ?>
+                                    <span class="badge badge-muted">
+                                        Inactief
+                                    </span>
+                                <?php endif; ?>
+                            </td>
+
+                            <td>
+                                <?= e((string) ($item['created_at'] ?? '')) ?>
+                            </td>
+<td>
+    <?= (int) ($item['is_online'] ?? 0) === 1 ? '🟢 Online' : '⚪ Offline' ?>
+</td>
+
+<td>
+    <?= e((string) ($item['last_seen_at'] ?? '-')) ?>
+</td>
+
+                            <td>
+                                <a
+                                    class="button button-small"
+                                    href="/user-edit.php?id=<?= (int) $item['id'] ?>"
+                                >
+                                    Bewerken
+                                </a>
+                            </td>
+                        </tr>
+
+                    <?php endforeach; ?>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        <?php endif; ?>
+
+    </div>
+
+</div>
+
+<?php render_footer(); ?>
