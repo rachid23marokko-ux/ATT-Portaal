@@ -182,16 +182,18 @@ js = once(js, '            .notification-item.att-birthday-item {', '''         
             .notification-item.att-birthday-item {''', 'JS stijl')
 
 stamp = datetime.now().strftime('%Y%m%d-%H%M%S')
+backup_dir = root / '.att-birthday-backups'
+backup_dir.mkdir(mode=0o700, exist_ok=True)
 backups = []
 try:
     for path in (api_path, js_path):
-        backup = path.with_name(path.name + '.bak-birthday-' + stamp)
+        backup = backup_dir / (path.name + '.bak-birthday-' + stamp)
         shutil.copy2(path, backup)
         backups.append((path, backup))
 
     # Lint before replacing either live file.
-    tmp_api = api_path.with_name(api_path.name + '.birthday-test-' + stamp)
-    tmp_js = js_path.with_name(js_path.stem + '.birthday-test-' + stamp + js_path.suffix)
+    tmp_api = backup_dir / (api_path.name + '.birthday-test-' + stamp)
+    tmp_js = backup_dir / (js_path.stem + '.birthday-test-' + stamp + js_path.suffix)
     tmp_api.write_text(api, encoding='utf-8')
     tmp_js.write_text(js, encoding='utf-8')
     try:
