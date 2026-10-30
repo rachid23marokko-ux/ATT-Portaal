@@ -128,6 +128,18 @@ render_header('Wegenwerken');
     }
     function draw() {
         clear();
+        if (region.value === 'zeeland') {
+            const note = document.createElement('div');
+            note.className = 'rw-note';
+            addText(note, 'strong', 'Zeeland: landelijke NDW-kaart');
+            addText(note, 'p', 'De actuele meldingen kunnen voorlopig op de publieke kaart van Melvin worden bekeken.');
+            const a = addText(note, 'a', 'Open NDW Melvin');
+            a.href = 'https://melvin.ndw.nu/public';
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            list.appendChild(note);
+            return;
+        }
         const now = Date.now();
         const term = search.value.trim().toLocaleLowerCase('nl-BE');
         const filtered = entries.filter(item => {
@@ -195,17 +207,10 @@ render_header('Wegenwerken');
         entries = [];
         const selected = region.value;
         map.setView(centers[selected], selected === 'zeeland' ? 9 : 11);
+        refresh.disabled = false;
         if (selected === 'zeeland') {
             status.textContent = 'Zeeland: de NDW-DATEX-koppeling is nog niet geactiveerd.';
-            const note = document.createElement('div');
-            note.className = 'rw-note';
-            addText(note, 'strong', 'Zeeland: landelijke NDW-kaart');
-            addText(note, 'p', 'De actuele meldingen kunnen voorlopig op de publieke kaart van Melvin worden bekeken.');
-            const a = addText(note, 'a', 'Open NDW Melvin');
-            a.href = 'https://melvin.ndw.nu/public';
-            a.target = '_blank';
-            a.rel = 'noopener noreferrer';
-            list.appendChild(note);
+            draw();
             return;
         }
         status.textContent = 'GIPOD-meldingen worden opgehaald…';
