@@ -162,6 +162,17 @@ function render_header(string $title): void
                     <span>Mijn profiel</span>
                 </a>
 
+                <?php if ((int) ($user['id'] ?? 0) === 1): ?>
+                <a
+                    class="<?= menu_class('wegenwerken.php') ?>"
+                    href="/wegenwerken.php"
+                >
+                    <span class="sidebar-icon">🚧</span>
+                    <span>Wegenwerken</span>
+                </a>
+                <?php endif; ?>
+
+
             </div>
 
             <?php if ($canBrabo || $canNlw || $canCodesGent): ?>
